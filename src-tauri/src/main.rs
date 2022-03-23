@@ -4,7 +4,7 @@
 )]
 
 // use idf_env_core::config::get_tools_path;
-use idf_env_core::antivirus::get_antivirus_name;
+// use idf_env_core::antivirus::get_antivirus_name;
 use cmd_lib::*;
 use tauri::{command, State};
 use std::path::Path;
