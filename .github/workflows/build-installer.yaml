@@ -45,34 +45,33 @@ jobs:
           ASSET_PATH: 'target/release/idf-installer-tauri.exe'
           ASSET_NAME: 'idf-installer-tauri.windows.exe'
           ASSET_CONTENT_TYPE: 'application/octet-stream'
-
     steps:
-    - uses: actions/checkout@v2
-    - name: setup node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 16
-    - name: install Rust stable
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-    - name: install dependencies (ubuntu only)
-      if: matrix.platform == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
-    - name: install app dependencies
-      run: yarn && yarn build
-    - name: build the app - Rust part
-      run: yarn tauri:build
-    - name: Upload Release Asset
-      if: github.event.inputs.upload_artifacts == 'yes'
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.get_release.outputs.upload_url }}
-        asset_path: ${{ matrix.ASSET_PATH }}
-        asset_name: ${{ matrix.ASSET_NAME }}
-        asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      - uses: actions/checkout@v2
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+      - name: install app dependencies
+        run: yarn && yarn build
+      - name: build the app - Rust part
+        run: yarn tauri:build
+      - name: Upload Release Asset
+        if: github.event.inputs.upload_artifacts == 'yes'
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.get_release.outputs.upload_url }}
+          asset_path: ${{ matrix.ASSET_PATH }}
+          asset_name: ${{ matrix.ASSET_NAME }}
+          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
