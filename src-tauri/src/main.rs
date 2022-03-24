@@ -17,7 +17,7 @@ enum MyError {
 fn run_command(esp_idf_path: &str) -> String {
   // let esp_idf_path = "c:/g";
   let parent_path = Path::new(esp_idf_path).parent().unwrap();
-  if (!parent_path.exists()) {
+  if !parent_path.exists() {
     std::fs::create_dir_all(parent_path);
   }
 

@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "idf-installer-tauri"
 version = "0.1.0"
-description = "A Tauri App"
+description = "ESP-IDF Installer"
 authors = ["you"]
 license = ""
 repository = ""
-default-run = "app"
+default-run = "idf-installer-tauri"
 edition = "2021"
 rust-version = "1.57"
 
