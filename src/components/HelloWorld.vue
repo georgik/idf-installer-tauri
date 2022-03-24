@@ -2,8 +2,7 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2>Install ESP-IDF</h2>
-    <input v-model="message" placeholder="C:/Espressif/frameworks/esp-idf-master">
-    <p>Message is: {{ message }}</p>
+    <input id="esp-idf-path" v-model="message">
     <button v-on:click="onRustCall()">
       {{ installButtonTitle }}
     </button>
@@ -21,6 +20,19 @@ export default {
   },
   props: {
     msg: String,
+  },
+  mounted() {
+    window.__TAURI__.os.platform().then(platform => {
+      window.__TAURI__.path.homeDir().then(homeDir => {
+        if (platform === "linux") {
+          this.message = homeDir + ".espressif/frameworks/esp-idf-master"
+        } else if (platform === "darwin") {
+          this.message = homeDir + ".espressif/frameworks/esp-idf-master"
+        } else if (platform === "win32") {
+          this.message = "C:/Espressif/frameworks/esp-idf-master"
+        }
+      });
+    });
   },
   methods: {
     onRustCall: function () {
@@ -45,7 +57,7 @@ export default {
       state.msg = 'abc';
     }
   }
-  
+
 }
 </script>
 
@@ -64,5 +76,8 @@ li {
 }
 a {
   color: #42b983;
+}
+#esp-idf-path {
+  width: 25em;
 }
 </style>

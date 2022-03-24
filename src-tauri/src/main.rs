@@ -16,6 +16,11 @@ enum MyError {
 
 fn run_command(esp_idf_path: &str) -> String {
   // let esp_idf_path = "c:/g";
+  let parent_path = Path::new(esp_idf_path).parent().unwrap();
+  if (!parent_path.exists()) {
+    std::fs::create_dir_all(parent_path);
+  }
+
   if !Path::new(esp_idf_path).exists() {
     println!("Cloning to {}", esp_idf_path);
     run_cmd! (
@@ -23,10 +28,18 @@ fn run_command(esp_idf_path: &str) -> String {
     );
   }
 
+  #[cfg(windows)]
   run_cmd! (
     cd "$esp_idf_path";
     $esp_idf_path/install.bat;
   );
+
+  #[cfg(unix)]
+  run_cmd! (
+    cd "$esp_idf_path";
+    $esp_idf_path/install.sh;
+  );
+
 
   "Ahoj".to_owned()
   // get_antivirus_name().into_iter().nth(0).unwrap().to_string()
