@@ -52,7 +52,7 @@ jobs:
     - name: install app dependencies and build it
       run: yarn && yarn build
     - name: list files
-      run: find src-tauri/target/release
+      run: find .
     - uses: tauri-apps/tauri-action@v0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
