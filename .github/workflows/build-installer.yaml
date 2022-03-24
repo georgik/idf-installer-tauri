@@ -1,4 +1,5 @@
 name: "build-installer"
+on:
   workflow_dispatch:
     inputs:
       upload_artifacts:
