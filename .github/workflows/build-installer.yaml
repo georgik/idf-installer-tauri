@@ -52,7 +52,7 @@ jobs:
     - name: install app dependencies
       run: yarn
     - name: build app
-      run: yarn build
+      run: yarn tauri:build
     - name: list files
       run: find .
     - uses: tauri-apps/tauri-action@v0
