@@ -14,7 +14,7 @@ enum MyError {
   FooError,
 }
 
-fn clone_esp_idf(esp_idf_base_path: &str, branch: &str) -> String {
+fn deploy_esp_idf(esp_idf_base_path: &str, branch: &str) -> String {
   // let esp_idf_path = "c:/g";
   let esp_idf_path_string = format!("{}/frameworks/esp-idf-{}", esp_idf_base_path, branch);
   let esp_idf_path = Path::new(esp_idf_path_string.as_str());
@@ -45,12 +45,30 @@ fn clone_esp_idf(esp_idf_base_path: &str, branch: &str) -> String {
   "Done".to_string()
 }
 
+fn deploy_esp_idf_branches(esp_idf_base_path: &str, branches: Vec<String>) -> String {
+  for branch in branches.iter() {
+    println!("Processing branch {}", branch);
+    deploy_esp_idf(esp_idf_base_path, branch.as_str());
+  }
+  "Done".to_string()
+}
+
 #[command(async)]
 fn simple_command(argument: String, branch: String) -> Result<String, MyError> {
   println!("{}, {}", argument, branch);
   (!argument.is_empty())
   //.then(|| get_tools_path().to_string())
-  .then(|| clone_esp_idf(argument.as_str(), branch.as_str()))
+  .then(|| deploy_esp_idf(argument.as_str(), branch.as_str()))
+  .ok_or(MyError::FooError)
+}
+
+#[command(async)]
+fn deploy_esp_idf_branches_command(base: String, branches: String) -> Result<String, MyError> {
+  let branches_vec: Vec<String> = serde_json::from_str(branches.as_str()).unwrap();
+  println!("{} {}", base, branches);
+  (!base.is_empty())
+  //.then(|| get_tools_path().to_string())
+  .then(|| deploy_esp_idf_branches(base.as_str(), branches_vec))
   .ok_or(MyError::FooError)
 }
 
@@ -58,7 +76,8 @@ fn main() {
   // println!("ESP-IDF: {}", get_tools_path());
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
-      simple_command
+      simple_command,
+      deploy_esp_idf_branches_command
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

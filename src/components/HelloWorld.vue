@@ -65,7 +65,8 @@ export default {
         console.log('calling tauri');
         this.installButtonTitle = "Installing...";
         window.__TAURI__
-          .invoke('simple_command',{argument:this.message, branch:'v4.4'})
+          .invoke('deploy_esp_idf_branches_command',{ base:this.message, branches:JSON.stringify(this.checkedEspIdf) })
+          // .invoke('simple_command',{argument:this.message, branch:'v4.4'})
           .then((response) => {
             this.installButtonTitle = "Finished";
             console.log('ok' + response)
