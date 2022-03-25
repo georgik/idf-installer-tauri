@@ -63,12 +63,11 @@ fn simple_command(argument: String, branch: String) -> Result<String, MyError> {
 }
 
 #[command(async)]
-fn deploy_esp_idf_branches_command(base: String, branches: String) -> Result<String, MyError> {
-  let branches_vec: Vec<String> = serde_json::from_str(branches.as_str()).unwrap();
-  println!("{} {}", base, branches);
+fn deploy_esp_idf_branches_command(base: String, branches: Vec<String>) -> Result<String, MyError> {
+  println!("{}", base);
   (!base.is_empty())
   //.then(|| get_tools_path().to_string())
-  .then(|| deploy_esp_idf_branches(base.as_str(), branches_vec))
+  .then(|| deploy_esp_idf_branches(base.as_str(), branches))
   .ok_or(MyError::FooError)
 }
 
