@@ -6,6 +6,7 @@
     <label for="esp-idf-path">Installation directory</label>
     <input id="esp-idf-path" v-model="message">
 
+    <h3>Frameworks</h3>
     <div>
       <ul>
         <li v-for="(version, index) in availableEspIdf" :key="index">
@@ -16,6 +17,19 @@
 
       <div>Selected frameworks: {{ checkedEspIdf }}</div>
     </div>
+
+    <h3>Targets</h3>
+    <div>
+      <ul>
+        <li v-for="(target, index) in availableTargets" :key="index">
+          <input type="checkbox" id="target-{{ target }}" :value="target" v-model="checkedTargets" />
+          <label for="target-{{ target }}">{{ target }}</label>
+        </li>
+      </ul>
+
+      <div>Selected targets: {{ checkedTargets }}</div>
+    </div>
+
 
     <button v-on:click="onRustCall()">
       {{ installButtonTitle }}
@@ -41,7 +55,14 @@ export default {
         'release/v4.1',
         'master'
       ],
+      availableTargets: [
+        'esp32',
+        'esp32s2',
+        'esp32s3',
+        'esp32c3'
+      ],
       checkedEspIdf: [ 'v4.4' ],
+      checkedTargets: [ 'esp32', 'esp32s3', 'esp32c3' ],
     }
   },
   props: {
