@@ -16,7 +16,8 @@ enum MyError {
 
 fn deploy_esp_idf(esp_idf_base_path: &str, branch: &str) -> String {
   // let esp_idf_path = "c:/g";
-  let esp_idf_path_string = format!("{}/frameworks/esp-idf-{}", esp_idf_base_path, branch);
+  let branch_path = branch.replace("/", "-");
+  let esp_idf_path_string = format!("{}/frameworks/esp-idf-{}", esp_idf_base_path, branch_path);
   let esp_idf_path = Path::new(esp_idf_path_string.as_str());
   let parent_path = esp_idf_path.parent().unwrap();
   if !parent_path.exists() {
