@@ -14,17 +14,20 @@ enum MyError {
   FooError,
 }
 
-fn run_command(esp_idf_path: &str) -> String {
+fn clone_esp_idf(esp_idf_base_path: &str, branch: &str) -> String {
   // let esp_idf_path = "c:/g";
-  let parent_path = Path::new(esp_idf_path).parent().unwrap();
+  let esp_idf_path_string = format!("{}/frameworks/esp-idf-{}", esp_idf_base_path, branch);
+  let esp_idf_path = Path::new(esp_idf_path_string.as_str());
+  let parent_path = esp_idf_path.parent().unwrap();
   if !parent_path.exists() {
     std::fs::create_dir_all(parent_path);
   }
 
-  if !Path::new(esp_idf_path).exists() {
-    println!("Cloning to {}", esp_idf_path);
+  println!("Checking existence of {}", esp_idf_path_string);
+  if !esp_idf_path.exists() {
+    println!("Cloning to {}", esp_idf_path_string);
     run_cmd! (
-      git clone "https://github.com/espressif/esp-idf.git" "--recursive" "--depth" "1" "--shallow-submodules" "$esp_idf_path";
+      git clone "https://github.com/espressif/esp-idf.git" "--branch" "$branch" "--recursive" "--depth" "1" "--shallow-submodules" "$esp_idf_path_string";
     );
   }
 
@@ -39,18 +42,15 @@ fn run_command(esp_idf_path: &str) -> String {
     cd "$esp_idf_path";
     $esp_idf_path/install.sh;
   );
-
-
-  "Ahoj".to_owned()
-  // get_antivirus_name().into_iter().nth(0).unwrap().to_string()
+  "Done".to_string()
 }
 
 #[command(async)]
-fn simple_command(argument: String) -> Result<String, MyError> {
-  println!("{}", argument);
+fn simple_command(argument: String, branch: String) -> Result<String, MyError> {
+  println!("{}, {}", argument, branch);
   (!argument.is_empty())
   //.then(|| get_tools_path().to_string())
-  .then(|| run_command(argument.as_str()))
+  .then(|| clone_esp_idf(argument.as_str(), branch.as_str()))
   .ok_or(MyError::FooError)
 }
 

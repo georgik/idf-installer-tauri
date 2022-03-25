@@ -2,7 +2,21 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2>Install ESP-IDF</h2>
+
+    <label for="esp-idf-path">Installation directory</label>
     <input id="esp-idf-path" v-model="message">
+
+    <div>
+      <ul>
+        <li v-for="(version, index) in availableEspIdf" :key="index">
+          <input type="checkbox" id="esp-idf-{{ version }}" :value="version" v-model="checkedEspIdf" />
+          <label for="esp-idf-{{ version }}">{{ version }}</label>
+        </li>
+      </ul>
+
+      <div>Selected frameworks: {{ checkedEspIdf }}</div>
+    </div>
+
     <button v-on:click="onRustCall()">
       {{ installButtonTitle }}
     </button>
@@ -15,7 +29,19 @@ export default {
   data() {
     return {
       message: 'C:/esp-idf-master',
-      installButtonTitle: 'Install'
+      installButtonTitle: 'Install',
+      availableEspIdf: [
+        'v4.4',
+        'v4.3.2',
+        'v4.2.3',
+        'v4.1.2',
+        'release/v4.4',
+        'release/v4.3',
+        'release/v4.2',
+        'release/v4.1',
+        'master'
+      ],
+      checkedEspIdf: [ 'v4.4' ],
     }
   },
   props: {
@@ -25,11 +51,11 @@ export default {
     window.__TAURI__.os.platform().then(platform => {
       window.__TAURI__.path.homeDir().then(homeDir => {
         if (platform === "linux") {
-          this.message = homeDir + ".espressif/frameworks/esp-idf-master"
+          this.message = homeDir + ".espressif"
         } else if (platform === "darwin") {
-          this.message = homeDir + ".espressif/frameworks/esp-idf-master"
+          this.message = homeDir + ".espressif"
         } else if (platform === "win32") {
-          this.message = "C:/Espressif/frameworks/esp-idf-master"
+          this.message = "C:/Espressif"
         }
       });
     });
@@ -39,7 +65,7 @@ export default {
         console.log('calling tauri');
         this.installButtonTitle = "Installing...";
         window.__TAURI__
-          .invoke('simple_command',{argument:this.message})
+          .invoke('simple_command',{argument:this.message, branch:'v4.4'})
           .then((response) => {
             this.installButtonTitle = "Finished";
             console.log('ok' + response)
