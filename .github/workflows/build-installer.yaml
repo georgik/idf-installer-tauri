@@ -40,16 +40,16 @@ jobs:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
         include:
         - os: macos-latest
-          ASSET_PATH: 'src-tauri/target/release/idf-installer-tauri'
-          ASSET_NAME: 'idf-installer-tauri-apple'
+          ASSET_PATH: 'src-tauri/target/release/idf-installer'
+          ASSET_NAME: 'idf-installer-apple'
           ASSET_CONTENT_TYPE: 'application/octet-stream'
         - os: ubuntu-latest
-          ASSET_PATH: 'src-tauri/target/release/idf-installer-tauri'
-          ASSET_NAME: 'idf-installer-tauri-linux'
+          ASSET_PATH: 'src-tauri/target/release/idf-installer'
+          ASSET_NAME: 'idf-installer-linux'
           ASSET_CONTENT_TYPE: 'application/octet-stream'
         - os: windows-latest
-          ASSET_PATH: 'src-tauri/target/release/idf-installer-tauri.exe'
-          ASSET_NAME: 'idf-installer-tauri-windows.exe'
+          ASSET_PATH: 'src-tauri/target/release/idf-installer.exe'
+          ASSET_NAME: 'idf-installer-windows.exe'
           ASSET_CONTENT_TYPE: 'application/octet-stream'
     steps:
       - uses: actions/checkout@v2
