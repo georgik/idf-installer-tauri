@@ -14,7 +14,7 @@ enum MyError {
   FooError,
 }
 
-fn deploy_esp_idf(esp_idf_base_path: &str, branch: &str) -> String {
+fn clone_esp_idf_branch(esp_idf_base_path: &str, branch: &str) -> String {
   // let esp_idf_path = "c:/g";
   let branch_path = branch.replace("/", "-");
   let esp_idf_path_string = format!("{}/frameworks/esp-idf-{}", esp_idf_base_path, branch_path);
@@ -31,37 +31,53 @@ fn deploy_esp_idf(esp_idf_base_path: &str, branch: &str) -> String {
       git clone "https://github.com/espressif/esp-idf.git" "--branch" "$branch" "--recursive" "--depth" "1" "--shallow-submodules" "$esp_idf_path_string";
     );
   }
+  "Ok".to_string()
+}
 
-  #[cfg(windows)]
+fn install_toolchain(esp_idf_base_path: &str, branch: &str, target: &str) -> String {
+  let python = "python3";
+  let branch_path = branch.replace("/", "-");
+  let esp_idf_path_string = format!("{}/frameworks/esp-idf-{}", esp_idf_base_path, branch_path);
+  let esp_idf_path = Path::new(esp_idf_path_string.as_str());
+  //
+  // #[cfg(windows)]
+  // run_cmd! (
+  //   cd "$esp_idf_path";
+  //   $python $esp_idf_path/install.bat;
+  // );
+
+  // #[cfg(unix)]
+  let targets = format!("--target={}", target);
+  println!("{} {}/tools/idf_tools.py install {}", python, esp_idf_path_string, targets);
   run_cmd! (
     cd "$esp_idf_path";
-    $esp_idf_path/install.bat;
-  );
-
-  #[cfg(unix)]
-  run_cmd! (
-    cd "$esp_idf_path";
-    $esp_idf_path/install.sh;
+    $python $esp_idf_path_string/tools/idf_tools.py install $targets;
   );
   "Done".to_string()
 }
 
 fn deploy_esp_idf_branches(esp_idf_base_path: &str, branches: Vec<String>) -> String {
   for branch in branches.iter() {
-    println!("Processing branch {}", branch);
-    deploy_esp_idf(esp_idf_base_path, branch.as_str());
+    if branch.contains(',') {
+      let mut iter = branch.splitn(2, ',');
+      let branch_name = iter.next().unwrap();
+      let target_name = iter.next().unwrap();
+      println!("Branch {}", branch);
+      clone_esp_idf_branch(esp_idf_base_path, branch_name);
+      install_toolchain(esp_idf_base_path, branch_name, target_name);
+    }
   }
   "Done".to_string()
 }
 
-#[command(async)]
-fn simple_command(argument: String, branch: String) -> Result<String, MyError> {
-  println!("{}, {}", argument, branch);
-  (!argument.is_empty())
-  //.then(|| get_tools_path().to_string())
-  .then(|| deploy_esp_idf(argument.as_str(), branch.as_str()))
-  .ok_or(MyError::FooError)
-}
+// #[command(async)]
+// fn simple_command(argument: String, branch: String) -> Result<String, MyError> {
+//   println!("{}, {}", argument, branch);
+//   (!argument.is_empty())
+//   //.then(|| get_tools_path().to_string())
+//   .then(|| deploy_esp_idf(argument.as_str(), branch.as_str()))
+//   .ok_or(MyError::FooError)
+// }
 
 #[command(async)]
 fn deploy_esp_idf_branches_command(base: String, branches: Vec<String>) -> Result<String, MyError> {
@@ -76,7 +92,7 @@ fn main() {
   // println!("ESP-IDF: {}", get_tools_path());
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
-      simple_command,
+      // simple_command,
       deploy_esp_idf_branches_command
     ])
     .run(tauri::generate_context!())

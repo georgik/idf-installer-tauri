@@ -6,29 +6,35 @@
     <label for="esp-idf-path">Installation directory</label>
     <input id="esp-idf-path" v-model="message">
 
-    <h3>Frameworks</h3>
-    <div>
-      <ul>
-        <li v-for="(version, index) in availableEspIdf" :key="index">
-          <input type="checkbox" id="esp-idf-{{ version }}" :value="version" v-model="checkedEspIdf" />
-          <label for="esp-idf-{{ version }}">{{ version }}</label>
-        </li>
-      </ul>
+    <h3>Frameworks &amp; Targets</h3>
+    <table>
+      <tr>
+        <td>&nbsp;</td>
+        <td v-for="(version, index) in availableEspIdf" :key="index">{{ version }}</td>
+      </tr>
 
-      <div>Selected frameworks: {{ checkedEspIdf }}</div>
-    </div>
+      <tr v-for="(target, targetIndex) in availableTargets" :key="targetIndex">
+        <td>{{ target }}</td>
+        <td v-for="(version, versionIndex) in availableEspIdf" :key="(versionIndex,targetIndex)">
+          <input type="checkbox" id="esp-idf-{{ version }}-{{ target }}" :value="version+','+target" v-model="checkedEspIdf" />
+<!--          <label for="esp-idf-{{ version }}">{{ version }}</label>-->
+        </td>
+      </tr>
 
-    <h3>Targets</h3>
-    <div>
-      <ul>
-        <li v-for="(target, index) in availableTargets" :key="index">
-          <input type="checkbox" id="target-{{ target }}" :value="target" v-model="checkedTargets" />
-          <label for="target-{{ target }}">{{ target }}</label>
-        </li>
-      </ul>
 
-      <div>Selected targets: {{ checkedTargets }}</div>
-    </div>
+    </table>
+    <div>Selected frameworks: {{ checkedEspIdf }}</div>
+<!--    <h3>Targets</h3>-->
+<!--    <div>-->
+<!--      <ul>-->
+<!--        <li v-for="(target, index) in availableTargets" :key="index">-->
+<!--          <input type="checkbox" id="target-{{ target }}" :value="target" v-model="checkedTargets" />-->
+<!--          <label for="target-{{ target }}">{{ target }}</label>-->
+<!--        </li>-->
+<!--      </ul>-->
+
+<!--      <div>Selected targets: {{ checkedTargets }}</div>-->
+<!--    </div>-->
 
 
     <button v-on:click="onRustCall()">
@@ -61,7 +67,17 @@ export default {
         'esp32s3',
         'esp32c3'
       ],
-      checkedEspIdf: [ 'v4.4' ],
+      frameworkData: {
+        'v4.4': { targets: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3' ] },
+        'v4.3.2': { targets: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3' ] },
+        'v4.2.3': { targets: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3' ] },
+        'release/v4.4': { targets: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3' ] },
+        'release/v4.3': { targets: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3' ] },
+        'release/v4.2': { targets: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3' ] },
+        'release/v4.1': { targets: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3' ] },
+        'master': { targets: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3' ] },
+      },
+      checkedEspIdf: [ 'v4.4,esp32', 'v4.4,esp32c3' ],
       checkedTargets: [ 'esp32', 'esp32s3', 'esp32c3' ],
     }
   },
@@ -124,5 +140,8 @@ a {
 }
 #esp-idf-path {
   width: 25em;
+}
+td {
+  padding: 0.2em;
 }
 </style>
